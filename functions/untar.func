@@ -1,0 +1,50 @@
+#!/bin/sh
+##BEGIN_INTRODUCTION##	This function auto untar the compressed file.
+##END_INTRODUCTION##
+
+#####################  Build in Things   ######################
+. $Function_Top/Include/Enviroment_Config.inc
+
+extract() { 
+    if [ -f $1 ] ; then 
+      case $1 in 
+        *.tar.bz2)   tar xjf $1     ;; 
+        *.tar.gz)    tar xzf $1     ;; 
+        *.bz2)       bunzip2 $1     ;; 
+        *.rar)       unrar e $1     ;; 
+        *.gz)        gunzip $1      ;; 
+        *.tar)       tar xf $1      ;; 
+        *.tbz2)      tar xjf $1     ;; 
+        *.tgz)       tar xzf $1     ;; 
+        *.zip)       unzip $1       ;; 
+        *.Z)         uncompress $1  ;; 
+        *.7z)        7z x $1        ;; 
+        *)     echo "'$1' cannot be extracted via extract()" ;; 
+         esac 
+     else 
+         echo "'$1' is not a valid file" 
+     fi 
+}
+
+##################### other functions below ######################
+
+
+######################  main below  ##############################
+if [ -n "$1" ];then
+	while [ -n "$1" ]; do
+	case $1 in
+##BEGIN_HELP##
+		-h)     shift 1;echo_help;exit 1;;                   #Show usages 
+		-i)     shift 1;echo_introduction;exit 1;;           #Show introduction 
+		-edit)  shift 1;gedit $Here_Path/$File_Name;exit 1;; #Edit this function 
+		-*)     echo "error: no such option $1. -h for help";exit 1;; 
+		*)      extract $*;exit 1;;                                  #Call function here
+##END_HELP##
+	esac
+	done
+else
+	echo_help
+fi
+#echo ---------------------End Of $Function_Name-----------------------
+
+

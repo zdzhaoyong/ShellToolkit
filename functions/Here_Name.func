@@ -1,0 +1,51 @@
+#!/bin/sh
+##BEGIN_INTRODUCTION##	This function can add alias for the current path and you can cd to here quickly in teminal!
+##END_INTRODUCTION##
+
+
+#####################  Build in Things   ######################
+. $Function_Top/Include/Enviroment_Config.inc
+
+##################### other functions below ######################
+
+add()
+{
+echo "alias "$1=\"nautilus $Call_Path \&cd $Call_Path \">>$Function_Data_Path/nautilus_alias
+. $Function_Data_Path/nautilus_alias
+}
+addcd()
+{
+if [ -n "$2" ];then
+    CD_PATH=$2
+else
+    CD_PATH=$Call_Path
+fi
+echo "alias "$1=\"cd $CD_PATH \">>$Function_Data_Path/nautilus_alias
+. $Function_Data_Path/nautilus_alias
+}
+addexport()
+{
+echo "export $1=$Call_Path" >>$Function_Data_Path/nautilus_alias
+. $Function_Data_Path/nautilus_alias
+}
+######################  main below  #######################
+if [ -n "$1" ];then
+	while [ -n "$1" ]; do
+	case $1 in
+##BEGIN_HELP##
+		( -h | -help | --h* ) shift 1;echo_help;exit 1;; #[-h]Show usages 
+		( -i | intro* ) shift 1;echo_introduction;exit 1;; #[-i]Show introduction 
+		( -n | -nautilus ) shift 1;add $*;exit 1;; #[-h]Show usages
+		( -e | -export ) shift 1;addexport $*;exit 1;; #[-h]Show usages
+		-edit|edit) shift 1;gedit $Here_Path/$File_Name;exit 1;; #[-edit]edit this function 
+		-*) echo "error: no such option $1. -h for help";exit 1;; # 
+		*)  addcd $*;exit 1;; #call function here
+##END_HELP##
+	esac
+	done
+#else
+#	echo_help
+fi
+echo ----------------------------------------------------
+
+

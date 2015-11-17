@@ -1,0 +1,61 @@
+#!/bin/sh
+##BEGIN_INTRODUCTION##	For user to get a Makefile and run make when the Call_Path does't has one.
+##END_INTRODUCTION##
+
+#####################  Build in Things   ######################
+. $Function_Top/Include/Enviroment_Config.inc
+
+##################### other functions below ######################
+make_MODE=bin
+Config_File=config.mk
+Depend_File=depend.mk
+CallFolderName=$(pwd |sed 's/^\(.*\)[/]//' )
+MakeScriptFolder=$Function_Data_Path/MakeScripts
+
+make_simp()
+{
+	if [ -f $Call_Path/Makefile ];then
+		echo "WARN: Current folder has got a Makefile.Still use make.func."
+		echo "Doing $make_MODE make..."
+		make -f $MakeScriptFolder/Makefile.$make_MODE  $*
+	else
+		cp $MakeScriptFolder/Makefile.$make_MODE $Call_Path/Makefile
+		echo "Doing $make_MODE make..."
+		make  $*
+	fi 
+}
+
+
+do_make()
+{
+	case $make_MODE in
+		bin)  make_simp $*;exit 1;;
+		static)  make_simp $*;exit 1;;
+		shared)  make_simp $*;exit 1;;
+		lib)     make_MODE=shared;make_simp $*;exit 1;;
+		*)    echo "no such option $make_MODE.options:bin,lib,static,shared." 
+	esac
+}
+
+######################  main below  ##############################
+if [ -n "$1" ];then
+	while [ -n "$1" ]; do
+	case $1 in
+##BEGIN_HELP##
+		-h)     shift 1;echo_help;exit 1;;                   	     #Show usages 
+		-i)     shift 1;echo_introduction;exit 1;;           	     #Show introduction 
+		-edit)  shift 1;gedit $Here_Path/$File_Name;exit 1;; 	     #Edit this function 
+		-m)     make_MODE=$2;shift 2;;                       	     #Set make mode:simp,bin,lib,all 
+		-o)     echo OUTPUT=$2>>$Call_Path/$Config_File;shift 2;;    #Set Makefile output
+		-src)   echo SRC_PATH=$2>>$Call_Path/$Config_File;shift 2;;  #Set source file path
+		*)      do_make $*;exit 1;;                          	     #Call function here
+##END_HELP##
+	esac
+	done
+	do_make
+else
+	do_make
+fi
+#echo ---------------------End Of $Function_Name-----------------------
+
+

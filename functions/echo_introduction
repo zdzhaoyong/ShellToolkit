@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ -n "$1" ];then
+	FILE_Content=$(cat < $1)
+else
+	FILE_Content=$(cat < $Function_Path/$Function_Name.func)
+fi
+HELP=${FILE_Content##*##BEGIN_INTRODUCTION##};
+HELP=${HELP%##END_INTRODUCTION##*};
+echo "$HELP"
+

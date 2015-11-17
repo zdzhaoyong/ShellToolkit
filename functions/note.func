@@ -1,0 +1,35 @@
+#!/bin/sh
+##BEGIN_INTRODUCTION##	This is a little tool for you to write note in teminal!
+##END_INTRODUCTION##
+
+
+#####################  Build in Things   ######################
+. $Function_Top/Include/Enviroment_Config.inc
+
+##################### other functions below ######################
+Diary_File=$Function_Data_Path/Notes.txt
+add_note()
+{
+echo ---------- $(date)------------------>> $Diary_File
+echo "$*" >> $Diary_File
+}
+
+######################  main below  ##############################
+if [ -n "$1" ];then
+	while [ -n "$1" ]; do
+	case $1 in
+##BEGIN_HELP##
+		-h)     shift 1;echo_help;exit 1;;                   #Show usages 
+		-i)     shift 1;echo_introduction;exit 1;;           #Show introduction 
+		-edit)  shift 1;gedit $Here_Path/$File_Name;exit 1;; #Edit this function 
+        -m)     shift 1;more  $Diary_File;exit 1;;           #Show the diary
+        -g)     shift 1;gedit $Diary_File;exit 1;;           #Edit the diary
+		-*)     echo "error: no such option $1. -h for help";exit 1;; 
+		*)      add_note $*;exit 1;;                        #Call function here
+##END_HELP##
+	esac
+	done
+else
+	more $Diary_File
+fi
+#echo ---------------------End Of $Function_Name-----------------------

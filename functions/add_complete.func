@@ -1,0 +1,61 @@
+#!/bin/sh
+##BEGIN_INTRODUCTION##	This function add a list_file to $Complete_Path for bash auto_completion.
+##END_INTRODUCTION##
+
+#####################  Build in Things   ######################
+. $Function_Top/Include/Enviroment_Config.inc
+
+##################### other functions below ######################
+Complete_Path=$Function_Data_Path/Complete_List
+
+add()
+{
+file_name=$1.comp
+shift 1
+if [ -z $1 ];then
+return
+fi
+#echo $Complete_Path/$file_name
+#echo "attempting $* -> $file_name."
+if [ -z $2 ];then
+	if [ -f "$Complete_Path/$file_name" ];then
+		 #if $1.comp exist and has already include $2,cancel it 
+		Lists_=$(cat $Complete_Path/$file_name) 
+		for now_name in $Lists_;do
+		#echo ""$1" = "$now_name"?"
+			if [ "$1" = "$now_name" ];then
+				Exist_Name="Exist";break
+			fi
+		done
+		if [ "$Exist_Name" = "Exist" ];then
+			Exist_Name="None"
+		else
+			echo $1 >>$Complete_Path/$file_name
+			echo "$1 >> $file_name(oldfile)"
+		fi
+	else
+		echo $* >>$Complete_Path/$file_name
+		echo "$* >> $file_name(newfile)"
+	fi
+else
+	echo $* >>$Complete_Path/$file_name
+	echo "$* >> $file_name"
+fi
+}
+
+######################  main below  ##############################
+if [ -n "$1" ];then
+	while [ -n "$1" ]; do
+	case $1 in
+##BEGIN_HELP##
+		# -h)     shift 1;echo_help;exit 1;;                      #Show usages 
+		# -i)     shift 1;echo_introduction;exit 1;;              #Show introduction 
+		# -edit)  shift 1;gedit $Here_Path/$File_Name;exit 1;;    #Edit this function 
+		*)        add $*;break;echo "done";;                      #Add complete
+##END_HELP##
+	esac
+	done
+else
+	echo_help
+fi
+#echo ---------------------End Of $Function_Name-----------------------

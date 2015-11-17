@@ -1,0 +1,11 @@
+#!/bin/bash
+if [ -n "$1" ];then
+	FILE_Content=$(cat < $1)
+else
+	FILE_Content=$(cat < $Function_Path/$Function_Name.func)
+fi
+HELP=${FILE_Content##*##BEGIN_HELP##};
+	HELP=${HELP%##END_HELP##*};
+	echo "usage:  $Function_Name [options values]"
+	echo options:"$HELP"---------------------By ZhaoYong-----------------
+	exit 0

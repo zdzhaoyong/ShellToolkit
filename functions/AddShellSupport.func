@@ -1,0 +1,86 @@
+#!/bin/sh
+##BEGIN_INTRODUCTION##	This function can be used by a program,it can provide compeletion and history support.
+#   usage:            AddShellSupport [Program_Name] [Install_Path]
+##END_INTRODUCTION##
+
+#####################  Build in Things   ######################
+. $Function_Top/Include/Enviroment_Config.inc
+
+##################### other functions below ######################
+DataFolder=$Function_Data_Path/Program_Shell_Support
+
+New_Setup_File()
+{
+	echo "Generating Setup.sh..."
+}
+
+add_support()
+{
+if [ -n "$1" ];then
+
+	#Preparing things
+	Program_Name=$1
+	echo Program_Name=$Program_Name
+	Program_Path=$Call_Path
+	echo Program_Path=$Program_Path
+	if [ -n "$2" ];then
+		Support_Install_Path=$2
+	else
+		Support_Install_Path=$DataFolder/$Program_Name
+	fi
+	if [ -d "$Support_Install_Path" ];then
+		echo  Folder $Support_Install_Path has exist. 
+	else	
+		mkdir $Support_Install_Path					
+	fi
+	echo "Installing to $Support_Install_Path ..."
+	Shell_Folder=$Support_Install_Path/Shell_Support
+	if [ -d "$Shell_Folder" ];then
+		echo  Folder $Shell_Folder has exist. 
+	else	
+		echo "Generating folder $Shell_Folder ..."
+		mkdir $Shell_Folder					
+	fi
+	echo "Generating Setup.sh..."	
+	#New_Setup_File $Shell_Folder $Program_Name $Program_Path
+	echo "Program_Name="$Program_Name>$Shell_Folder/Setup.sh
+	echo "export $Program_Name""_Path="$Program_Path>>$Shell_Folder/Setup.sh
+	echo "Here_Path="$Shell_Folder>>$Shell_Folder/Setup.sh
+	echo "$Program_Name""_Shell_Support_Path=\$Here_Path">>$Shell_Folder/Setup.sh
+	echo "alias $Program_Name"'="bash $Here_Path/$Program_Name.sh"'>>$Shell_Folder/Setup.sh
+	echo '
+	if [ -f "$Here_Path/Name_Complete.sh" ]; then
+	. $Here_Path/Name_Complete.sh
+	fi'>>$Shell_Folder/Setup.sh
+	echo "Setup.sh generated!"
+	echo "Generating $Shell_Folder/$Program_Name.sh"
+	cp $DataFolder/example/Shell_Support/example.sh $Shell_Folder/$Program_Name.sh
+	echo "Generating $Shell_Folder/Name_Complete.sh"
+	cp $DataFolder/example/Shell_Support/Name_Complete.sh $Shell_Folder/Name_Complete.sh
+	echo "Adding source to Setup.sh for support of the system."
+	echo '#####################  '$Program_Name'  ######################
+if [ -f '$Shell_Folder/Setup.sh' ]; then
+	source '$Shell_Folder/Setup.sh'
+fi
+'>>$DataFolder/Setup.sh
+	echo "Installed succeed!"
+fi
+}
+######################  main below  #######################
+if [ -n "$1" ];then
+	while [ -n "$1" ]; do
+	case $1 in
+##BEGIN_HELP##
+		( -h | -help | --h* ) shift 1;echo_help;exit 1;; #[-h]Show usages 
+		( -i | intro* ) shift 1;echo_introduction;exit 1;; #[-i]Show introduction 
+		-edit|edit) shift 1;gedit $Function_Path/$Function_Name.func;exit 1;; #[-edit]edit this function 
+		-*) echo "error: no such option $1. -h for help";exit 1;; # 
+		*)  add_support $*;exit 1;; #call function here
+##END_HELP##
+	esac
+	done
+else
+	echo "Please input Program_Name!"
+fi
+echo ----------------------------------------------------
+

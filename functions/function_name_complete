@@ -1,0 +1,35 @@
+#!/bin/bash
+Complete_Path=$Function_Data_Path/Complete_List
+if [ -e "$Complete_Path" ];then
+	export Complete_List=$(cd $Complete_Path&&ls |sed 's/\(.*\)\..*$/\1/')
+	export Function_Names=$(cd $Function_Path&&ls *.func|sed 's/\(.*\)\..*$/\1/')
+fi
+
+#complete -W "$Function_Names $Function_Comps" "function"
+function_complete() 
+{
+    #echo $Function_Names
+    COMPREPLY=()
+    local cur=${COMP_WORDS[COMP_CWORD]}; #当前命令最后一组词
+    local com=${COMP_WORDS[COMP_CWORD-1]}; #当前命令前一个词
+	#echo "$com in $Complete_List?"
+    for test_str in $Complete_List;do
+	if [ $com = $test_str ];then
+		 Exist_Value="Exist"
+	fi
+    done
+    if [ -f $Complete_Path/$com.comp ];then
+	   Lists_=$(cat $Complete_Path/$com.comp) 
+    fi
+	#echo "Value=$Exist_Value"
+	if [ "$com" = "Function" ];then
+        COMPREPLY=($(compgen -W "$Function_Names $Lists_" -- $cur))
+    else
+		if [ "$Exist_Value" = "Exist" ]; then
+		Exist_Value="None"
+		COMPREPLY=($(compgen -W "$Lists_" -- $cur))
+		fi
+	fi
+}
+
+complete -df -F function_complete "Function"

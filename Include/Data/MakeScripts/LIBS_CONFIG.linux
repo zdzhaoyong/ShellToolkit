@@ -1,0 +1,71 @@
+################################################################################
+#Module Config Things
+################################################################################
+
+################################################################################
+# Compile setup
+################################################################################
+SIMP_CFLAGS             = -O3 -pipe -msse4 -I. -I$(TOPDIR)/src
+#SIMP_CFLAGS            += -g -rdynamic
+SIMP_LDFLAGS            = -Wl,-rpath=.:../libs:../../libs
+
+
+################################################################################
+################################################################################
+PTHREAD_LDFLAGS         = -lpthread
+
+
+################################################################################
+# OpenGL settings
+################################################################################
+OPENGL_CFLAGS           = 
+OPENGL_LDFLAGS          = -lGL -lGLU -lglut -lGLEW
+
+
+################################################################################
+# Opencv
+# run 
+#   export PKG_CONFIG_PATH=/opt/OpenCV-2.4/lib/pkgconfig
+################################################################################
+OPENCV_CFLAGS           = $(shell pkg-config --cflags opencv)
+OPENCV_LDFLAGS          = $(shell pkg-config --libs opencv)
+
+
+################################################################################
+# Qt settings
+################################################################################
+QT_CFLAGS               =   -D_REENTRANT \
+                            -DQT_NO_DEBUG -DQT_DECLARATIVE_LIB -DQT_SVG_LIB -DQT_SQL_LIB -DQT_XML_LIB \
+                            -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED \
+                            -I/usr/share/qt4/mkspecs/linux-g++ \
+                            -I/usr/include/qt4/QtCore \
+                            -I/usr/include/qt4/QtGui \
+                            -I/usr/include/qt4/QtXml \
+                            -I/usr/include/qt4/QtOpenGL \
+                            -I/usr/include/qt4/QtSql \
+                            -I/usr/include/qt4/QtSvg \
+                            -I/usr/include/qt4/QtDeclarative \
+                            -I/usr/include/qt4 
+QT_LDFLAGS              = -lQtDeclarative -lQtSvg -lQtSql -lQtXml -lQtOpenGL -lQtGui -lQtNetwork -lQtCore 
+
+
+################################################################################
+# QGLViewer settings
+################################################################################
+QGLVIEWER_CFLAGS        =  
+QGLVIEWER_LDFLAGS       = -lQGLViewer
+
+
+################################################################################
+# Boost
+################################################################################
+BOOST_CFLAGS            = 
+BOOST_LDFLAGS           = -lboost_serialization -lboost_system -lboost_thread -lboost_program_options
+
+
+################################################################################
+# All of above
+################################################################################
+ALL_CFLAGS              = $(SIMP_CFLAGS) 
+ALL_LDFLAGS             = $(SIMP_LDFLAGS)
+

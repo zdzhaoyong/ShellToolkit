@@ -1,0 +1,78 @@
+#!/bin/sh
+if [ -z $Call_Path ];then
+Call_Path=$(pwd)
+Here_Path=$(dirname $(readlink -f $0))
+else
+Here_Path=$Here_Path/functions
+fi
+##BEGIN_INTRODUCTION##	This function does not got an introduction yet.
+##END_INTRODUCTION##
+##################### other functions below ######################
+
+#从文件路径中获取 路径|(去后缀)文件名|文件名后缀
+FilePath_Path()
+{
+#【#掐头，%去尾（最小匹配），##，%%重复表示最大匹配】
+FilePath=$1
+Path=${FilePath%/*};
+FileName=${FilePath##*/};
+FileName_WithoutExt=${FileName%.*};
+Ext_Name=${FileName##*.};
+}
+#获取字符串长度
+Length()
+{
+expr length $* #忽略数组
+#echo ${#*} #对于数组返回维数
+}
+#查找子字符串在单词中的位置
+Find_SubStr()
+{
+local Sub_Str=$1;shift 1;
+local Main_Str=$*
+expr index  $Main_Str "$Sub_Str"
+}
+#获得子串
+getsub()
+{
+local FirstPos=$1
+local Length=$2
+shift 2
+local Main_Str=$*
+expr substr "$Main_Str" $FirstPos $Length
+}
+#字符串的替换
+Replace()
+{
+x=abcdabcd
+echo ${x/a/b} # 只替换一个
+#bbcdabcd
+echo ${x//a/b} # 替换所有
+#bbcdbbcd
+}
+#判断命令
+IsExist()
+{
+local Sub_Str=$1;shift 1;
+local Main_Str=$*
+for Test_Str in $Main_Str;do
+	if [ "$Sub_Str" = "$Test_Str" ];then
+		echo "Exist"
+		#出现echo返回非空则为真
+	fi
+done
+}
+######################  main below  #######################
+if [ -n "$1" ];then
+	while [ -n "$1" ]; do
+	case $1 in
+		( -h | -help | --h* ) shift 1;. $Here_Path/echo_help;exit 1;; #[-h]Show usages
+		( -i | intro* ) shift 1;. $Here_Path/echo_introduction;exit 1;; #[-i]Show introduction
+		-edit|edit) shift 1;gedit $Function_Path/$Function_Name.func;exit 1;; #[-edit]edit this function 
+		-*) echo "error: no such option $1. -h for help";exit 1;;
+		*)  $*;exit 1;; #call function here
+	esac
+	done
+#else
+#	echo_help
+fi
